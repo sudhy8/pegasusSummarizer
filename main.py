@@ -1,14 +1,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from transformers import TFAutoModelForSeq2SeqLM, AutoTokenizer
 import tensorflow as tf
+import tensorflow_text as text
 
 app = FastAPI()
 
-# Load smaller model and tokenizer...
-model_name = "facebook/bart-large-cnn"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = TFAutoModelForSeq2SeqLM.from_pretrained(model_name)
+# Load a pre-trained TensorFlow model for text generation
+model = tf.saved_model.load('path_to_your_saved_model')
 
 class SummarizationRequest(BaseModel):
     text: str
@@ -17,20 +15,13 @@ class SummarizationRequest(BaseModel):
 
 @app.post("/summarize")
 async def summarize(request: SummarizationRequest):
-    inputs = tokenizer(request.text, max_length=1024, truncation=True, return_tensors="tf")
+    input_text = tf.constant([request.text])
     
-    summary_ids = model.generate(
-        inputs["input_ids"],
-        num_beams=4,
-        max_length=request.max_length,
-        min_length=request.min_length,
-        length_penalty=2.0,
-        early_stopping=True
-    )
+    summary = model.generate(input_text, 
+                             max_length=request.max_length, 
+                             min_length=request.min_length)
     
-    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-    
-    return {"summary": summary}
+    return {"summary": summary[0].numpy().decode('utf-8')}
 
 if __name__ == "__main__":
     import uvicorn
