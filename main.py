@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from transformers import TFAutoModelForSeq2SeqLM, AutoTokenizer
-import tensorflow as tf
+# from pydantic import BaseModel
+# from transformers import TFAutoModelForSeq2SeqLM, AutoTokenizer
+# import tensorflow as tf
 
 app = FastAPI()
 
