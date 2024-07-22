@@ -3,4 +3,3 @@ uvicorn==0.20.0
 pydantic==1.10.5
 transformers==4.30.0
 tensorflow==2.13.0
-https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp310-cp310-linux_x86_64.whl
